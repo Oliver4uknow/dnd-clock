@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>龙与地下城风格时钟</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Creepster&family=Nosifer&family=Butcherman&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Butcherman', serif;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(120, 0, 0, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(0, 80, 0, 0.3) 0%, transparent 50%),
+                linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 25%, #16213e 50%, #0f0f0f 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #ff6b35;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        /* 背景动画粒子 */
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: #ff6b35;
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+            opacity: 0.7;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0.7; }
+            50% { transform: translateY(-20px) rotate(180deg); opacity: 1; }
+        }
+        
+        .container {
+            text-align: center;
+            padding: 40px;
+            background: 
+                radial-gradient(circle at center, rgba(255, 107, 53, 0.1) 0%, transparent 70%),
+                linear-gradient(145deg, rgba(139, 69, 19, 0.2) 0%, rgba(160, 82, 45, 0.1) 100%);
+            border-radius: 30px;
+            backdrop-filter: blur(10px);
+            box-shadow: 
+                0 0 80px rgba(255, 107, 53, 0.4),
+                inset 0 0 50px rgba(0, 0, 0, 0.3),
+                0 0 0 3px rgba(255, 107, 53, 0.3);
+            border: 2px solid #8b4513;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(from 0deg, transparent, rgba(255, 107, 53, 0.1), transparent);
+            animation: rotate 20s linear infinite;
+            z-index: -1;
+        }
+        
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .title {
+            font-family: 'Creepster', cursive;
+            font-size: 2.8rem;
+            font-weight: 400;
+            margin-bottom: 30px;
+            text-shadow: 
+                0 0 20px rgba(255, 107, 53, 0.8),
+                0 0 40px rgba(255, 107, 53, 0.6),
+                2px 2px 4px rgba(0, 0, 0, 0.8);
+            letter-spacing: 3px;
+            color: #ff6b35;
+            animation: titleGlow 3s ease-in-out infinite alternate;
+        }
+        
+        @keyframes titleGlow {
+            from { 
+                text-shadow: 
+                    0 0 20px rgba(255, 107, 53, 0.8),
+                    0 0 40px rgba(255, 107, 53, 0.6),
+                    2px 2px 4px rgba(0, 0, 0, 0.8);
+            }
+            to { 
+                text-shadow: 
+                    0 0 30px rgba(255, 107, 53, 1),
+                    0 0 60px rgba(255, 107, 53, 0.8),
+                    2px 2px 4px rgba(0, 0, 0, 0.8);
+            }
+        }
+        
+        .clock-frame {
+            position: relative;
+            margin: 30px auto;
+            width: 350px;
+            height: 350px;
+            border-radius: 50%;
+            background: 
+                radial-gradient(circle at 30% 30%, rgba(139, 69, 19, 0.8) 0%, rgba(160, 82, 45, 0.6) 40%, rgba(101, 67, 33, 0.8) 100%);
+            border: 8px solid #8b4513;
+            box-shadow: 
+                0 0 50px rgba(255, 107, 53, 0.6),
+                inset 0 0 30px rgba(0, 0, 0, 0.7),
+                inset 0 0 0 15px rgba(139, 69, 19, 0.3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .clock-face {
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: 
+                radial-gradient(circle at center, rgba(0, 0, 0, 0.9) 0%, rgba(26, 26, 46, 0.8) 70%, rgba(0, 0, 0, 0.9) 100%);
+            position: relative;
+            border: 3px solid #ff6b35;
+            box-shadow: 
+                0 0 30px rgba(255, 107, 53, 0.5),
+                inset 0 0 20px rgba(0, 0, 0, 0.8);
+        }
+        
+        .hour-markers {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+        }
+        
+        .hour-marker {
+            position: absolute;
+            width: 4px;
+            height: 30px;
+            background: linear-gradient(to bottom, #ff6b35, #d4af37);
+            left: 50%;
+            top: 10px;
+            transform-origin: 50% 140px;
+            box-shadow: 0 0 10px rgba(255, 107, 53, 0.8);
+        }
+        
+        .hour-marker.major {
+            width: 6px;
+            height: 40px;
+            background: linear-gradient(to bottom, #ff6b35, #ffd700);
+            box-shadow: 0 0 15px rgba(255, 107, 53, 1);
+        }
+        
+        .rune-numbers {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            font-family: 'Nosifer', cursive;
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #ff6b35;
+            text-shadow: 
+                0 0 15px rgba(255, 107, 53, 0.9),
+                0 0 30px rgba(255, 107, 53, 0.6);
+        }
+        
+        .rune-number {
+            position: absolute;
+            transform: translate(-50%, -50%);
+        }
+        
+        .clock-hands {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+        }
+        
+        .hand {
+            position: absolute;
+            left: 50%;
+            bottom: 50%;
+            transform-origin: 50% 100%;
+            background: linear-gradient(to top, #8b4513, #ff6b35, #ffd700);
+            box-shadow: 0 0 20px rgba(255, 107, 53, 0.8);
+            border-radius: 5px 5px 0 0;
+        }
+        
+        .hour-hand {
+            width: 8px;
+            height: 80px;
+            margin-left: -4px;
+            z-index: 3;
+        }
+        
+        .minute-hand {
+            width: 6px;
+            height: 110px;
+            margin-left: -3px;
+            z-index: 4;
+        }
+        
+        .second-hand {
+            width: 2px;
+            height: 120px;
+            margin-left: -1px;
+            background: linear-gradient(to top, #8b4513, #ff4500, #ff0000);
+            z-index: 5;
+            animation: tick 1s steps(60) infinite;
+        }
+        
+        @keyframes tick {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .center-dot {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 20px;
+            height: 20px;
+            background: radial-gradient(circle, #ffd700 0%, #ff6b35 50%, #8b4513 100%);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 6;
+            box-shadow: 
+                0 0 20px rgba(255, 215, 0, 0.8),
+                inset 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+        
+        .digital-time {
+            font-family: 'Butcherman', serif;
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin: 30px 0;
+            text-shadow: 
+                0 0 20px rgba(255, 107, 53, 1),
+                0 0 40px rgba(255, 107, 53, 0.8),
+                2px 2px 4px rgba(0, 0, 0, 0.8);
+            letter-spacing: 4px;
+            color: #ff6b35;
+            animation: pulse 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes pulse {
+            from { transform: scale(1); }
+            to { transform: scale(1.05); }
+        }
+        
+        .date-display {
+            font-family: 'Butcherman', serif;
+            font-size: 1.3rem;
+            margin: 20px 0;
+            color: #d4af37;
+            text-shadow: 0 0 15px rgba(212, 175, 55, 0.8);
+            letter-spacing: 2px;
+        }
+        
+        .dragon-ornaments {
+            position: absolute;
+            font-size: 2rem;
+            color: #ff6b35;
+            text-shadow: 0 0 20px rgba(255, 107, 53, 0.8);
+            animation: dragonBreathe 4s ease-in-out infinite;
+        }
+        
+        @keyframes dragonBreathe {
+            0%, 100% { 
+                transform: scale(1);
+                text-shadow: 0 0 20px rgba(255, 107, 53, 0.8);
+            }
+            50% { 
+                transform: scale(1.1);
+                text-shadow: 0 0 30px rgba(255, 107, 53, 1);
+            }
+        }
+        
+        .dragon-ornaments.top-left { top: 20px; left: 20px; }
+        .dragon-ornaments.top-right { top: 20px; right: 20px; }
+        .dragon-ornaments.bottom-left { bottom: 20px; left: 20px; }
+        .dragon-ornaments.bottom-right { bottom: 20px; right: 20px; }
+        
+        .realm-info {
+            font-family: 'Butcherman', serif;
+            font-size: 1.1rem;
+            margin: 15px 0;
+            color: #8fbc8f;
+            text-shadow: 0 0 10px rgba(143, 188, 143, 0.8);
+            letter-spacing: 1px;
+        }
+        
+        @media (max-width: 768px) {
+            .title { font-size: 2rem; }
+            .digital-time { font-size: 2rem; }
+            .clock-frame { width: 280px; height: 280px; }
+            .clock-face { width: 240px; height: 240px; }
+            .hour-hand { height: 60px; }
+            .minute-hand { height: 85px; }
+            .second-hand { height: 95px; }
+            .container { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">🐉 龙与地下城时钟 🐲</h1>
+        
+        <div class="clock-frame">
+            <div class="clock-face">
+                <div class="hour-markers"></div>
+                <div class="rune-numbers"></div>
+                <div class="clock-hands">
+                    <div class="hand hour-hand" id="hourHand"></div>
+                    <div class="hand minute-hand" id="minuteHand"></div>
+                    <div class="hand second-hand" id="secondHand"></div>
+                </div>
+                <div class="center-dot"></div>
+            </div>
+        </div>
+        
+        <div class="digital-time" id="digitalTime">00:00:00</div>
+        <div class="date-display" id="dateDisplay">星期一, 2025年6月23日</div>
+        <div class="realm-info" id="realmInfo">费伦大陆 - 深水城时间</div>
+        
+        <div class="dragon-ornaments top-left">🐉</div>
+        <div class="dragon-ornaments top-right">⚔️</div>
+        <div class="dragon-ornaments bottom-left">🛡️</div>
+        <div class="dragon-ornaments bottom-right">🏰</div>
+    </div>
+
+    <script>
+        // 创建背景粒子效果
+        function createParticles() {
+            const particleCount = 50;
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 6 + 's';
+                particle.style.animationDuration = (Math.random() * 3 + 3) + 's';
+                document.body.appendChild(particle);
+            }
+        }
+
+        // 创建时钟刻度
+        function createHourMarkers() {
+            const markersContainer = document.querySelector('.hour-markers');
+            for (let i = 0; i < 12; i++) {
+                const marker = document.createElement('div');
+                marker.className = i % 3 === 0 ? 'hour-marker major' : 'hour-marker';
+                marker.style.transform = `translateX(-50%) rotate(${i * 30}deg)`;
+                markersContainer.appendChild(marker);
+            }
+        }
+
+        // 创建符文数字
+        function createRuneNumbers() {
+            const numbersContainer = document.querySelector('.rune-numbers');
+            const runeNumbers = ['XII', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI'];
+            
+            for (let i = 0; i < 12; i++) {
+                const number = document.createElement('div');
+                number.className = 'rune-number';
+                number.textContent = runeNumbers[i];
+                
+                const angle = (i * 30 - 90) * Math.PI / 180;
+                const radius = 110;
+                const x = 150 + radius * Math.cos(angle);
+                const y = 150 + radius * Math.sin(angle);
+                
+                number.style.left = x + 'px';
+                number.style.top = y + 'px';
+                numbersContainer.appendChild(number);
+            }
+        }
+
+        // 更新时钟
+        function updateClock() {
+            const now = new Date();
+            const hours = now.getHours();
+            const minutes = now.getMinutes();
+            const seconds = now.getSeconds();
+
+            // 更新指针
+            const hourAngle = (hours % 12) * 30 + minutes * 0.5;
+            const minuteAngle = minutes * 6 + seconds * 0.1;
+            const secondAngle = seconds * 6;
+
+            document.getElementById('hourHand').style.transform = `rotate(${hourAngle}deg)`;
+            document.getElementById('minuteHand').style.transform = `rotate(${minuteAngle}deg)`;
+            document.getElementById('secondHand').style.transform = `rotate(${secondAngle}deg)`;
+
+            // 更新数字时间
+            const timeString = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            document.getElementById('digitalTime').textContent = timeString;
+
+            // 更新日期
+            const days = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+            const months = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'];
+            const dateString = `${days[now.getDay()]}, ${now.getFullYear()}年${months[now.getMonth()]}${now.getDate()}日`;
+            document.getElementById('dateDisplay').textContent = dateString;
+
+            // 根据时间段更新领域信息
+            let realmInfo = '';
+            if (hours >= 6 && hours < 12) {
+                realmInfo = '费伦大陆 - 晨曦之光普照大地';
+            } else if (hours >= 12 && hours < 18) {
+                realmInfo = '费伦大陆 - 烈日当空的冒险时光';
+            } else if (hours >= 18 && hours < 22) {
+                realmInfo = '费伦大陆 - 黄昏降临的魔法时刻';
+            } else {
+                realmInfo = '费伦大陆 - 夜晚的神秘与危险';
+            }
+            document.getElementById('realmInfo').textContent = realmInfo;
+        }
+
+        // 初始化
+        createParticles();
+        createHourMarkers();
+        createRuneNumbers();
+        updateClock();
+
+        // 每秒更新时钟
+        setInterval(updateClock, 1000);
+
+        // 添加一些交互效果
+        document.querySelector('.clock-face').addEventListener('mouseover', function() {
+            this.style.boxShadow = '0 0 50px rgba(255, 107, 53, 0.8), inset 0 0 20px rgba(0, 0, 0, 0.8)';
+        });
+
+        document.querySelector('.clock-face').addEventListener('mouseout', function() {
+            this.style.boxShadow = '0 0 30px rgba(255, 107, 53, 0.5), inset 0 0 20px rgba(0, 0, 0, 0.8)';
+        });
+    </script>
+</body>
+</html>
